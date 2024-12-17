@@ -82,3 +82,51 @@ function createHero(name: string, type: HeroType): Hero {
   ): Hero | undefined {
     return heroes.find(hero => hero[property] === value);
   }
+  
+// Функція раунду бою
+function battleRound(hero1: Hero, hero2: Hero): string {
+    if (!hero1.isAlive || !hero2.isAlive) {
+        return `${!hero1.isAlive ? hero1.name : hero2.name} is already defeated.`;
+    }
+  
+    const result1 = calculateDamage(hero1, hero2);
+    const result2 = hero2.isAlive ? calculateDamage(hero2, hero1) : null;
+  
+    let roundSummary = `${hero1.name} attacks ${hero2.name} and deals ${result1.damage} ${result1.isCritical ? '(Critical)' : ''}. ${hero2.name}'s health: ${result1.remainingHealth}.\n`;
+    if (result2) {
+        roundSummary += `${hero2.name} attacks ${hero1.name} and deals ${result2.damage} ${result2.isCritical ? '(Critical)' : ''}. ${hero1.name}'s health: ${result2.remainingHealth}.`;
+    }
+  
+    return roundSummary;
+  }
+  
+  // Створення масиву героїв
+  const heroes: Hero[] = [
+    createHero("Tinker", HeroType.Mage),
+    createHero("Broodmother", HeroType.Warrior),
+    createHero("Huskar", HeroType.Archer)
+  ];
+  
+  // Проведення тестових раундів бою
+  console.log("=== Battle Begins ===");
+  const battleResults: string[] = [];
+  
+  for (let i = 0; i < 5; i++) {
+    battleResults.push(battleRound(heroes[0], heroes[1]));
+    battleResults.push(battleRound(heroes[1], heroes[2]));
+    battleResults.push(battleRound(heroes[0], heroes[2]));
+  }
+  
+  battleResults.forEach((result, index) => {
+    console.log(`Round ${index + 1}:\n${result}`);
+  });
+  
+  console.log("\n=== Final Hero Stats ===");
+  heroes.forEach(hero => {
+    console.log(`${hero.name} - Health: ${hero.stats.health}, Alive: ${hero.isAlive}`);
+  });
+  
+  // Пошук героя
+  const searchedHero = findHeroByProperty(heroes, "type", HeroType.Mage);
+  console.log("Searched Hero:", searchedHero);
+  
